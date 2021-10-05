@@ -9,7 +9,7 @@ type ApiResult = {
   time_next_update_unix: string;
   time_next_update_utc: string;
   base_code: string;
-  conversion_rates: Map<string, number>;
+  conversion_rates: Record<string, number>;
 };
 
 export const getCurrencies = (): Promise<ApiResult> =>

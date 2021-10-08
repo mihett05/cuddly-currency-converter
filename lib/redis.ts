@@ -1,9 +1,17 @@
 import IORedis from 'ioredis';
 import { getCurrencies } from './api';
 
-const redis = new IORedis(process.env.REDIS_HOST, {
-  password: process.env.REDIS_PASSWORD,
-});
+let _redis: IORedis.Redis | null = null;
+
+const getRedis = () => {
+  if (!_redis) {
+    _redis = new IORedis(process.env.REDIS_HOST, {
+      password: process.env.REDIS_PASSWORD,
+    });
+  }
+
+  return _redis;
+};
 
 type RateResponse = {
   success: boolean;
@@ -12,6 +20,7 @@ type RateResponse = {
 };
 
 export const checkRates = async (): Promise<RateResponse> => {
+  const redis = getRedis();
   let nextUpdate = await redis.get('nextUpdate');
   let lastUpdate = await redis.get('lastUpdate');
   if (lastUpdate === null || nextUpdate === null || new Date() >= new Date(nextUpdate)) {
@@ -38,4 +47,4 @@ export const checkRates = async (): Promise<RateResponse> => {
   };
 };
 
-export default redis;
+export default getRedis();

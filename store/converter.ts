@@ -1,4 +1,4 @@
-import { attach, createEffect, createEvent, createStore, forward, Store } from 'effector';
+import { attach, createEffect, createEvent, createStore, forward, guard, Store } from 'effector';
 import { convertRequest, ConvertResponse, ConvertRequest, CurrenciesResponse, getCurrencies } from './api';
 
 interface ConverterStore {
@@ -14,7 +14,7 @@ interface ConverterStore {
 interface UpdateEvent {
   from?: string;
   to?: string;
-  valueFrom?: string;
+  valueFrom?: number;
 }
 
 export const convert = createEvent();

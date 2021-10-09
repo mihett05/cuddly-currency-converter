@@ -1,5 +1,5 @@
 import IORedis from 'ioredis';
-import { getCurrencies } from './api';
+import { getCurrencies } from './exchange-api';
 
 const redis = new IORedis(process.env.REDIS_HOST, {
   password: process.env.REDIS_PASSWORD,

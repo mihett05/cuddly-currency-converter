@@ -1,8 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import redis, { checkRates } from '../../lib/redis';
-import { BaseResponse } from '../../lib/base-response';
 
-type Response = BaseResponse & {
+type Response = {
+  success: boolean;
+  error: string | null;
+  lastUpdate: string | null;
+  relevantBefore: string | null;
   currencies: Record<string, number>;
 };
 

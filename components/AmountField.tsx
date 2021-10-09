@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import NumberFormat from 'react-number-format';
 
 interface AmountFieldProps {
@@ -19,7 +19,6 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props: a
       onValueChange={(values) => {
         const [int, float] = values.value.split('.');
         if (int.length <= 15 && !values.value.includes('-')) {
-          console.log(values.value.includes('-'));
           onChange({
             target: {
               name: props.name,
@@ -37,7 +36,6 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props: a
 });
 
 export default function AmountField({ label, value, onChange }: AmountFieldProps) {
-  // null value means empty string
   return (
     <TextField
       label={label}

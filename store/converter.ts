@@ -86,3 +86,5 @@ export const $converter = createStore<ConverterStore>({
     from: state.to,
     to: state.from,
   }));
+
+fetchCurrencies();

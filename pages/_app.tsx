@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { PaletteOptions, ScopedCssBaseline, ThemeOptions, ThemeProvider } from '@mui/material';
@@ -19,7 +19,7 @@ const basePalette: PaletteOptions = {
 };
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const [colorMode, setColorMode] = useState<'light' | 'dark'>('light');
+  const [colorMode, setColorMode] = useState<'light' | 'dark'>('dark');
   const theme = useMemo(
     () =>
       createTheme({
@@ -30,6 +30,19 @@ function MyApp({ Component, pageProps }: AppProps) {
       }),
     [colorMode],
   );
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      let localMode = localStorage.getItem('colorMode');
+      if (localMode === null || (localMode !== 'light' && localMode !== 'dark')) {
+        localStorage.setItem('colorMode', 'dark');
+        setColorMode('dark');
+      } else {
+        setColorMode(localMode as 'light' | 'dark');
+      }
+    }
+  }, []);
+
   return (
     <>
       <Head>
@@ -41,7 +54,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         value={{
           mode: colorMode,
           toggleTheme: () => {
-            setColorMode(theme.palette.mode === 'dark' ? 'light' : 'dark');
+            const newColorMode = theme.palette.mode === 'dark' ? 'light' : 'dark';
+            setColorMode(newColorMode);
+            localStorage.setItem('colorMode', newColorMode);
           },
         }}
       >

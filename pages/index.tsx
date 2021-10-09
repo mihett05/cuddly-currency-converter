@@ -2,19 +2,7 @@ import React from 'react';
 import type { NextPage } from 'next';
 import { useStore } from 'effector-react';
 
-import {
-  useTheme,
-  useMediaQuery,
-  Box,
-  Grid,
-  IconButton,
-  Typography,
-  Skeleton,
-  Paper,
-  AppBar,
-  Toolbar,
-  ScopedCssBaseline,
-} from '@mui/material';
+import { useTheme, useMediaQuery, Box, Grid, IconButton, Typography, Skeleton, Paper } from '@mui/material';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 

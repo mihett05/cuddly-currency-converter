@@ -1,6 +1,7 @@
 import React from 'react';
 import type { NextPage } from 'next';
 import { useStore } from 'effector-react';
+import { useTranslation } from 'react-i18next';
 
 import { useTheme, useMediaQuery, Box, Grid, IconButton, Typography, Skeleton, Paper } from '@mui/material';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
@@ -19,6 +20,7 @@ const Home: NextPage = () => {
   const store = useStore($converter);
   const theme = useTheme();
   const smMatch = useMediaQuery(theme.breakpoints.up('sm'));
+  const { t } = useTranslation();
 
   const isLoaded = Object.keys(store.currencies).length > 0;
 
@@ -64,7 +66,7 @@ const Home: NextPage = () => {
               >
                 <Grid item xs={7}>
                   <Loading height={80}>
-                    <AmountField label="From" value={store.valueFrom} onChange={setValue} />
+                    <AmountField label={t('from')} value={store.valueFrom} onChange={setValue} />
                   </Loading>
                 </Grid>
                 <Grid
@@ -107,7 +109,7 @@ const Home: NextPage = () => {
             ) : (
               <>
                 <Loading height={50}>
-                  <AmountField label="From" value={store.valueFrom} onChange={setValue} />
+                  <AmountField label={t('from')} value={store.valueFrom} onChange={setValue} />
                 </Loading>
 
                 <Loading height={50}>
@@ -154,7 +156,7 @@ const Home: NextPage = () => {
             </Typography>
             <Typography variant="h6">
               {isLoaded && store.lastUpdate !== null ? (
-                `Last updated: ${store.lastUpdate.toLocaleString()}`
+                `${t('lastUpdated')}: ${store.lastUpdate.toLocaleString()}`
               ) : (
                 <Skeleton />
               )}

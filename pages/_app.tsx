@@ -1,12 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { PaletteOptions, ScopedCssBaseline, ThemeOptions, ThemeProvider } from '@mui/material';
+import { PaletteOptions, ScopedCssBaseline, ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material';
 
 import '../styles/globals.css';
 
 import { ColorModeContext } from '../contexts/color-mode';
+
+import '../i18n';
+import i18n from 'i18next';
 
 const basePalette: PaletteOptions = {
   primary: {
@@ -41,6 +44,15 @@ function MyApp({ Component, pageProps }: AppProps) {
         setColorMode(localMode as 'light' | 'dark');
       }
     }
+  }, []);
+
+  useEffect(() => {
+    let lang = localStorage.getItem('lang');
+    if (lang === null || (lang !== 'ru' && lang !== 'en')) {
+      localStorage.setItem('lang', 'en');
+      lang = 'en';
+    }
+    i18n.changeLanguage(lang);
   }, []);
 
   return (

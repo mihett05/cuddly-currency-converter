@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import redis, { checkRates } from '../../lib/redis';
+import getRedis, { checkRates } from '../../lib/redis';
 
 type Response = {
   success: boolean;
@@ -14,6 +14,7 @@ const getQueryArg = (arg: string | string[]): string => (Array.isArray(arg) ? ar
 const parseValue = (value: string | string[]): number => parseFloat(getQueryArg(value));
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
+  const redis = getRedis();
   const checkResult = await checkRates();
   if (!checkResult.success) {
     return res.status(500).json({

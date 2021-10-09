@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import redis, { checkRates } from '../../lib/redis';
+import getRedis, { checkRates } from '../../lib/redis';
 import { BaseResponse } from '../../lib/base-response';
 
 type Response = BaseResponse & {
@@ -7,6 +7,7 @@ type Response = BaseResponse & {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
+  const redis = getRedis();
   const checkResult = await checkRates();
   if (!checkResult.success) {
     return res.status(500).json({
@@ -18,13 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     });
   }
 
-  return res
-    .status(200)
-    .json({
-      success: true,
-      error: null,
-      lastUpdate: checkResult.lastUpdate,
-      relevantBefore: checkResult.nextUpdate,
-      currencies: await redis.hkeys('rates'),
-    });
+  return res.status(200).json({
+    success: true,
+    error: null,
+    lastUpdate: checkResult.lastUpdate,
+    relevantBefore: checkResult.nextUpdate,
+    currencies: await redis.hkeys('rates'),
+  });
 }

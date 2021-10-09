@@ -44,7 +44,7 @@ export default function AmountField({ label, value, onChange }: CurrencyFieldPro
           onChange(null);
         }
       }}
-      variant="standard"
+      variant="outlined"
       InputProps={{
         inputComponent: NumberFormatCustom,
       }}

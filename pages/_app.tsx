@@ -1,7 +1,10 @@
 import React from 'react';
-import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import { ThemeProvider } from '@mui/material';
+import { createTheme } from '@mui/material';
+
+const theme = createTheme();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -11,7 +14,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="description" content="Yet another one currency converter on React and Next.js" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Component {...pageProps} />
+      <ThemeProvider theme={theme}>
+        <Component {...pageProps} />
+      </ThemeProvider>
     </>
   );
 }

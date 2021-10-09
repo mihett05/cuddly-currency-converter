@@ -1,102 +1,88 @@
-import { attach, createEffect, createEvent, createStore, forward, guard, Store } from 'effector';
-import { convertRequest, ConvertResponse, ConvertRequest, CurrenciesResponse, getCurrencies } from './api';
+import { createEffect, createEvent, createStore, forward } from 'effector';
+import { getCurrencies, Response } from './api';
 
 interface ConverterStore {
   from: string;
   to: string;
-  valueFrom: number | null;
-  valueTo: number | null;
+  valueFrom: number;
+  valueTo: number;
   error: string | null;
   lastUpdate: Date | null;
-  currencies: string[];
-}
-
-interface UpdateEvent {
-  from?: string;
-  to?: string;
-  valueFrom?: number;
+  currencies: Record<string, number>;
 }
 
 export const convert = createEvent();
-export const update = createEvent<UpdateEvent>();
+
+export const setValue = createEvent<number>();
+export const setFrom = createEvent<string>();
+export const setTo = createEvent<string>();
+
 export const swap = createEvent();
 export const fetchCurrencies = createEvent();
 
-const convertFx = createEffect<ConvertRequest, ConvertResponse>().use(convertRequest);
-const fetchCurrenciesFx = createEffect<void, CurrenciesResponse>().use(getCurrencies);
+const fetchCurrenciesFx = createEffect<void, Response>().use(getCurrencies);
+
+forward({
+  from: fetchCurrencies,
+  to: fetchCurrenciesFx,
+});
+
+forward({
+  from: [setValue, setFrom, setTo, swap],
+  to: convert,
+});
 
 export const $converter = createStore<ConverterStore>({
   from: 'USD',
   to: 'RUB',
-  valueFrom: null,
-  valueTo: null,
+  valueFrom: 0,
+  valueTo: 0,
   error: null,
   lastUpdate: null,
-  currencies: ['RUB', 'USD'],
+  currencies: {},
 })
-  .on(convertFx.doneData, (state, result) => {
-    if (result.success) {
-      return {
-        ...state,
-        valueTo: result.value,
-        lastUpdate: new Date(result.lastUpdate as string),
-      };
-    } else {
-      return {
-        ...state,
-        error: result.error,
-      };
-    }
-  })
   .on(fetchCurrenciesFx.doneData, (state, result) => {
     if (result.success) {
       return { ...state, currencies: result.currencies };
     } else {
       return { ...state, error: result.error };
     }
-  });
+  })
+  .on(convert, (state: ConverterStore) => {
+    const fromInUsd = state.currencies[state.from];
+    const toInUsd = state.currencies[state.to];
 
-$converter.on(update, (state: ConverterStore, data: UpdateEvent) => {
-  const stateUpdates: any = {};
+    const result = (state.valueFrom / fromInUsd) * toInUsd;
 
-  if (data.from !== undefined) {
-    stateUpdates.from = data.from;
-  }
-  if (data.to !== undefined) {
-    stateUpdates.to = data.to;
-  }
-  if (data.valueFrom !== undefined) {
-    stateUpdates.valueFrom = data.valueFrom;
-  }
+    if (isNaN(result) || !isFinite(result)) {
+      return { ...state, valueTo: 0 };
+    }
 
-  return { ...state, stateUpdates };
-});
-$converter.on(swap, (state: ConverterStore) => ({
-  ...state,
-  from: state.to,
-  to: state.from,
-  valueFrom: state.valueTo,
-  valueTo: state.valueFrom,
-}));
-
-const serializeConvertBeforeFetch = attach<void, Store<ConverterStore>, typeof convertFx>({
-  effect: convertFx,
-  source: $converter,
-  mapParams: (_, data: ConverterStore) => {
     return {
-      from: data.from,
-      to: data.to,
-      value: data.valueFrom || 0,
+      ...state,
+      valueTo: result,
     };
-  },
-});
-
-forward({
-  from: convert,
-  to: serializeConvertBeforeFetch,
-});
-
-forward({
-  from: fetchCurrencies,
-  to: fetchCurrenciesFx,
-});
+  })
+  .on(setValue, (state, value: number) => {
+    return {
+      ...state,
+      valueFrom: value,
+    };
+  })
+  .on(setFrom, (state, from: string) => {
+    return {
+      ...state,
+      from,
+    };
+  })
+  .on(setTo, (state, to: string) => {
+    return {
+      ...state,
+      to,
+    };
+  })
+  .on(swap, (state: ConverterStore) => ({
+    ...state,
+    from: state.to,
+    to: state.from,
+  }));

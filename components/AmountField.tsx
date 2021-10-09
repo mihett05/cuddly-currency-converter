@@ -2,10 +2,10 @@ import React from 'react';
 import { Box, TextField } from '@mui/material';
 import NumberFormat from 'react-number-format';
 
-interface CurrencyFieldProps {
+interface AmountFieldProps {
   label: string;
-  value: number | null;
-  onChange: (value: number | null) => any;
+  value: number;
+  onChange: (value: number) => any;
 }
 
 // https://mui.com/components/text-fields/#integration-with-3rd-party-input-libraries
@@ -17,37 +17,44 @@ const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(props: a
       {...other}
       getInputRef={ref}
       onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
+        const [int, float] = values.value.split('.');
+        if (int.length <= 15 && !values.value.includes('-')) {
+          console.log(values.value.includes('-'));
+          onChange({
+            target: {
+              name: props.name,
+              value: values.value,
+            },
+          });
+        }
       }}
       thousandSeparator
       isNumericString
+      inputMode="decimal"
+      decimalScale={2}
     />
   );
 });
 
-export default function AmountField({ label, value, onChange }: CurrencyFieldProps) {
+export default function AmountField({ label, value, onChange }: AmountFieldProps) {
   // null value means empty string
   return (
     <TextField
       label={label}
-      value={value === null ? '' : value.toString()}
+      value={value.toString()}
       onChange={(event) => {
         const value = parseFloat(event.target.value);
         if (!isNaN(value)) {
           onChange(value);
         } else {
-          onChange(null);
+          onChange(0);
         }
       }}
-      variant="outlined"
+      variant="standard"
       InputProps={{
         inputComponent: NumberFormatCustom,
       }}
+      fullWidth
     />
   );
 }

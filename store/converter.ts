@@ -43,7 +43,11 @@ export const $converter = createStore<ConverterStore>({
 })
   .on(fetchCurrenciesFx.doneData, (state, result) => {
     if (result.success) {
-      return { ...state, currencies: result.currencies };
+      return {
+        ...state,
+        currencies: result.currencies,
+        lastUpdate: result.lastUpdate !== null ? new Date(result.lastUpdate) : null,
+      };
     } else {
       return { ...state, error: result.error };
     }

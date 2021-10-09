@@ -60,7 +60,10 @@ const Home: NextPage = () => {
         >
           <Paper
             sx={{
-              padding: 4,
+              paddingTop: 8,
+              paddingBottom: 8,
+              paddingRight: 4,
+              paddingLeft: 4,
             }}
           >
             {smMatch ? (
@@ -68,7 +71,7 @@ const Home: NextPage = () => {
                 container
                 spacing={2}
                 sx={{
-                  width: '40vw',
+                  width: '60vw',
                 }}
               >
                 <Grid item xs={7}>
@@ -90,7 +93,8 @@ const Home: NextPage = () => {
                 <Grid
                   item
                   xs={1}
-                  style={{
+                  sx={{
+                    textAlign: 'center',
                     transform: 'translate(0, 25%)',
                   }}
                 >
@@ -140,7 +144,13 @@ const Home: NextPage = () => {
               </>
             )}
             <Typography variant="h6">
-              {isLoaded ? `${store.valueFrom.toFixed(2)} ${fromInfo ? fromInfo.name : store.from} =` : <Skeleton />}
+              {isLoaded ? (
+                `${store.valueFrom.toFixed(2)}${fromInfo ? fromInfo.symbol_native : ''} ${
+                  fromInfo ? fromInfo.name : store.from
+                } =`
+              ) : (
+                <Skeleton />
+              )}
             </Typography>
             <Typography
               variant="h4"
@@ -148,7 +158,18 @@ const Home: NextPage = () => {
                 padding: '0.5em 0',
               }}
             >
-              {isLoaded ? `${store.valueTo.toFixed(2)} ${toInfo ? toInfo.name : store.to}` : <Skeleton />}
+              {isLoaded ? (
+                `${store.valueTo.toFixed(2)}${toInfo ? toInfo.symbol_native : ''} ${toInfo ? toInfo.name : store.to}`
+              ) : (
+                <Skeleton />
+              )}
+            </Typography>
+            <Typography variant="h6">
+              {isLoaded && store.lastUpdate !== null ? (
+                `Last updated: ${store.lastUpdate.toLocaleString()}`
+              ) : (
+                <Skeleton />
+              )}
             </Typography>
           </Paper>
         </Grid>
